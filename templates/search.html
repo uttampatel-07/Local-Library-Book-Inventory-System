@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Search Books - LLIS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="bi bi-search"></i> Search Books</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" class="mb-4">
+                    {{ form.hidden_tag() }}
+                    <div class="input-group">
+                        {{ form.search(class="form-control form-control-lg", placeholder="Search by title, author, ISBN, or category...") }}
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+
+                {% if books is defined %}
+                    {% if books %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>ISBN</th>
+                                    <th>Category</th>
+                                    <th>Available</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for book in books %}
+                                <tr>
+                                    <td><strong>{{ book.title }}</strong></td>
+                                    <td>{{ book.author }}</td>
+                                    <td>{{ book.isbn }}</td>
+                                    <td>
+                                        {% if book.category %}
+                                            <span class="badge bg-secondary">{{ book.category }}</span>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if book.available_copies > 0 %}
+                                            <span class="badge bg-success">{{ book.available_copies }}</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">{{ book.available_copies }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('view_book', id=book.id) }}" class="btn btn-sm btn-info">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% elif form.search.data %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-search" style="font-size: 4rem; color: #ccc;"></i>
+                        <p class="text-muted mt-3">No books found matching your search.</p>
+                    </div>
+                    {% endif %}
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-search" style="font-size: 4rem; color: #ccc;"></i>
+                    <p class="text-muted mt-3">Enter a search term to find books.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

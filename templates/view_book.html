@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }} - LLIS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4><i class="bi bi-book"></i> Book Details</h4>
+                <div>
+                    <a href="{{ url_for('edit_book', id=book.id) }}" class="btn btn-warning btn-sm">
+                        <i class="bi bi-pencil"></i> Edit
+                    </a>
+                    <a href="{{ url_for('index') }}" class="btn btn-secondary btn-sm">
+                        <i class="bi bi-arrow-left"></i> Back
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="mb-3">{{ book.title }}</h5>
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%">Author:</th>
+                                <td>{{ book.author }}</td>
+                            </tr>
+                            <tr>
+                                <th>ISBN:</th>
+                                <td>{{ book.isbn }}</td>
+                            </tr>
+                            {% if book.publisher %}
+                            <tr>
+                                <th>Publisher:</th>
+                                <td>{{ book.publisher }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if book.publication_year %}
+                            <tr>
+                                <th>Publication Year:</th>
+                                <td>{{ book.publication_year }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if book.category %}
+                            <tr>
+                                <th>Category:</th>
+                                <td><span class="badge bg-secondary">{{ book.category }}</span></td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <th>Total Copies:</th>
+                                <td>{{ book.total_copies }}</td>
+                            </tr>
+                            <tr>
+                                <th>Available Copies:</th>
+                                <td>
+                                    {% if book.available_copies > 0 %}
+                                        <span class="badge bg-success">{{ book.available_copies }}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">{{ book.available_copies }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Borrowed Copies:</th>
+                                <td>
+                                    <span class="badge bg-warning">{{ book.total_copies - book.available_copies }}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Date Added:</th>
+                                <td>{{ book.date_added.strftime('%Y-%m-%d %H:%M') }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        {% if book.description %}
+                        <h6>Description:</h6>
+                        <p class="text-muted">{{ book.description }}</p>
+                        {% else %}
+                        <p class="text-muted">No description available.</p>
+                        {% endif %}
+                        
+                        <div class="mt-4">
+                            <h6>Actions:</h6>
+                            <div class="d-flex gap-2 flex-wrap">
+                                {% if book.available_copies > 0 %}
+                                <a href="{{ url_for('borrow_book', id=book.id) }}" class="btn btn-success">
+                                    <i class="bi bi-arrow-down-circle"></i> Issue Book
+                                </a>
+                                {% endif %}
+                                {% if book.available_copies < book.total_copies %}
+                                <a href="{{ url_for('return_book', id=book.id) }}" class="btn btn-primary">
+                                    <i class="bi bi-arrow-up-circle"></i> Return Book
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if active_borrowings %}
+                <div class="mt-4">
+                    <h6>Active Borrowings:</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Borrower Name</th>
+                                    <th>ID</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Borrow Date</th>
+                                    <th>Due Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for borrowing in active_borrowings %}
+                                <tr>
+                                    <td><strong>{{ borrowing.borrower_name }}</strong></td>
+                                    <td>{{ borrowing.borrower_id or '-' }}</td>
+                                    <td>{{ borrowing.borrower_email or '-' }}</td>
+                                    <td>{{ borrowing.borrower_phone or '-' }}</td>
+                                    <td>{{ borrowing.borrow_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        {% if borrowing.due_date %}
+                                            {{ borrowing.due_date.strftime('%Y-%m-%d') }}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

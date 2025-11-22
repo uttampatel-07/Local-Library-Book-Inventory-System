@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Borrowing History - LLIS{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4><i class="bi bi-clock-history"></i> Borrowing History</h4>
+        <div>
+            <span class="badge bg-success me-2">Active: {{ active_borrowings|length }}</span>
+            <span class="badge bg-secondary">Total: {{ all_borrowings|length }}</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <ul class="nav nav-tabs mb-3" id="borrowingTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" type="button" role="tab">
+                    Active Borrowings ({{ active_borrowings|length }})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">
+                    All History ({{ all_borrowings|length }})
+                </button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="borrowingTabsContent">
+            <!-- Active Borrowings Tab -->
+            <div class="tab-pane fade show active" id="active" role="tabpanel">
+                {% if active_borrowings %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Book Title</th>
+                                <th>Borrower Name</th>
+                                <th>ID</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Borrow Date</th>
+                                <th>Due Date</th>
+                                <th>Days Borrowed</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for borrowing in active_borrowings %}
+                            <tr>
+                                <td><strong>{{ borrowing.book.title }}</strong></td>
+                                <td>{{ borrowing.borrower_name }}</td>
+                                <td>{{ borrowing.borrower_id or '-' }}</td>
+                                <td>{{ borrowing.borrower_email or '-' }}</td>
+                                <td>{{ borrowing.borrower_phone or '-' }}</td>
+                                <td>{{ borrowing.borrow_date.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    {% if borrowing.due_date %}
+                                        {% if borrowing.days_overdue > 0 %}
+                                            <span class="badge bg-danger">{{ borrowing.due_date.strftime('%Y-%m-%d') }} ({{ borrowing.days_overdue }} days overdue)</span>
+                                        {% else %}
+                                            {{ borrowing.due_date.strftime('%Y-%m-%d') }}
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ borrowing.days_borrowed }} day{{ 's' if borrowing.days_borrowed != 1 else '' }}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('view_book', id=borrowing.book.id) }}" class="btn btn-sm btn-info">
+                                        <i class="bi bi-eye"></i> View Book
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-check-circle" style="font-size: 4rem; color: #28a745;"></i>
+                    <p class="text-muted mt-3">No active borrowings. All books are available!</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- All History Tab -->
+            <div class="tab-pane fade" id="all" role="tabpanel">
+                {% if all_borrowings %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Book Title</th>
+                                <th>Borrower Name</th>
+                                <th>ID</th>
+                                <th>Borrow Date</th>
+                                <th>Return Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for borrowing in all_borrowings %}
+                            <tr>
+                                <td><strong>{{ borrowing.book.title }}</strong></td>
+                                <td>{{ borrowing.borrower_name }}</td>
+                                <td>{{ borrowing.borrower_id or '-' }}</td>
+                                <td>{{ borrowing.borrow_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>
+                                    {% if borrowing.return_date %}
+                                        {{ borrowing.return_date.strftime('%Y-%m-%d %H:%M') }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if borrowing.status == 'borrowed' %}
+                                        <span class="badge bg-warning">Borrowed</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Returned</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('view_book', id=borrowing.book.id) }}" class="btn btn-sm btn-info">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
+                    <p class="text-muted mt-3">No borrowing history yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Set current datetime for overdue calculations
+    const now = new Date();
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tab switching is handled by Bootstrap
+    });
+</script>
+{% endblock %}
+

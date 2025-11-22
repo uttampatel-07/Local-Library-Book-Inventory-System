@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Add Book - LLIS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="bi bi-plus-circle"></i> Add New Book</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.title.label(class="form-label") }}
+                            {{ form.title(class="form-control") }}
+                            {% if form.title.errors %}
+                                <div class="text-danger">{{ form.title.errors[0] }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.author.label(class="form-label") }}
+                            {{ form.author(class="form-control") }}
+                            {% if form.author.errors %}
+                                <div class="text-danger">{{ form.author.errors[0] }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.isbn.label(class="form-label") }}
+                            {{ form.isbn(class="form-control") }}
+                            {% if form.isbn.errors %}
+                                <div class="text-danger">{{ form.isbn.errors[0] }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.publisher.label(class="form-label") }}
+                            {{ form.publisher(class="form-control") }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            {{ form.publication_year.label(class="form-label") }}
+                            {{ form.publication_year(class="form-control") }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            {{ form.category.label(class="form-label") }}
+                            {{ form.category(class="form-select") }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            {{ form.total_copies.label(class="form-label") }}
+                            {{ form.total_copies(class="form-control", type="number", min="1") }}
+                            {% if form.total_copies.errors %}
+                                <div class="text-danger">{{ form.total_copies.errors[0] }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control", rows="4") }}
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
